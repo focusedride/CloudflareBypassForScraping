@@ -10,7 +10,8 @@ class CloudflareBypasser:
 
     def search_recursively_shadow_root_with_iframe(self, ele):
         title = self.driver.title.lower()
-        if ele.shadow_root:
+        if 'just a moment' in title or 'un insta' in title:
+            if ele.shadow_root:
             if ele.shadow_root.child().tag == "iframe":
                 return ele.shadow_root.child()
         else:
