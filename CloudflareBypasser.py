@@ -36,7 +36,7 @@ class CloudflareBypasser:
     def locate_cf_button(self):
         title = self.driver.title.lower()
         button = None
-        if "just a moment" in title or "un instant" in title:
+        if "just a moment" in title:
             eles = self.driver.eles("tag:input")
             for ele in eles:
                 if "name" in ele.attrs.keys() and "type" in ele.attrs.keys():
@@ -50,7 +50,7 @@ class CloudflareBypasser:
             # If the button is not found, search it recursively
             self.log_message("Basic search failed. Searching for button recursively.")
             ele = self.driver.ele("tag:body")
-            if "just a moment" in title or "un instant" in title:
+            if "just a moment" in title:
                 iframe = self.search_recursively_shadow_root_with_iframe(ele)
                 if iframe:
                     button = self.search_recursively_shadow_root_with_cf_input(iframe("tag:body"))
@@ -78,7 +78,7 @@ class CloudflareBypasser:
     def is_bypassed(self):
         try:
             title = self.driver.title.lower()
-            return "just a moment" not in title and "un instant" not in title
+            return "just a moment" not in title
         except Exception as e:
             self.log_message(f"Error checking page title: {e}")
             return False
