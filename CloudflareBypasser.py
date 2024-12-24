@@ -35,9 +35,9 @@ class CloudflareBypasser:
         eles = self.driver.eles("tag:input")
         for ele in eles:
             if "name" in ele.attrs.keys() and "type" in ele.attrs.keys():
-                print(f"222222222222['name']={ele.attrs['name']}")
+                self.log_message(f"['name']={ele.attrs['name']}")
                 if "turnstile" in ele.attrs["name"] and ele.attrs["type"] == "hidden":
-                    print(f"3333333333333333['name']={ele.attrs['name']}")
+                    self.log_message(f"['name']={ele.attrs['name']}")
                     button = (
                         ele.parent()
                         .shadow_root.child()("tag:body")
