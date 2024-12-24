@@ -9,9 +9,7 @@ class CloudflareBypasser:
         self.log = log
 
     def search_recursively_shadow_root_with_iframe(self, ele):
-        title = self.driver.title.lower()
-        if 'just a moment' in title or 'un insta' in title:
-            if ele.shadow_root:
+        if ele.shadow_root:
             if ele.shadow_root.child().tag == "iframe":
                 return ele.shadow_root.child()
         else:
@@ -22,28 +20,30 @@ class CloudflareBypasser:
         return None
 
     def search_recursively_shadow_root_with_cf_input(self, ele):
-        title = self.driver.title.lower()
-        if 'just a moment' in title or 'un insta' in title:
-            if ele.shadow_root:
-                if ele.shadow_root.ele("tag:input"):
-                    return ele.shadow_root.ele("tag:input")
-            else:
-                for child in ele.children():
-                    result = self.search_recursively_shadow_root_with_cf_input(child)
-                    if result:
-                        return result
-            return None
+        if ele.shadow_root:
+            if ele.shadow_root.ele("tag:input"):
+                return ele.shadow_root.ele("tag:input")
+        else:
+            for child in ele.children():
+                result = self.search_recursively_shadow_root_with_cf_input(child)
+                if result:
+                    return result
+        return None
 
     def locate_cf_button(self):
-        title = self.driver.title.lower()
         button = None
-        if "just a moment" in title:
-            eles = self.driver.eles("tag:input")
-            for ele in eles:
-                if "name" in ele.attrs.keys() and "type" in ele.attrs.keys():
-                    if "turnstile" in ele.attrs["name"] and ele.attrs["type"] == "hidden":
-                        button = ele.parent().shadow_root.child()("tag:body").shadow_root("tag:input")
-                        break
+        eles = self.driver.eles("tag:input")
+        for ele in eles:
+            if "name" in ele.attrs.keys() and "type" in ele.attrs.keys():
+                print(f"222222222222['name']={ele.attrs['name']}")
+                if "turnstile" in ele.attrs["name"] and ele.attrs["type"] == "hidden":
+                    print(f"3333333333333333['name']={ele.attrs['name']}")
+                    button = (
+                        ele.parent()
+                        .shadow_root.child()("tag:body")
+                        .shadow_root("tag:input")
+                    )
+                    break
 
         if button:
             return button
@@ -51,20 +51,20 @@ class CloudflareBypasser:
             # If the button is not found, search it recursively
             self.log_message("Basic search failed. Searching for button recursively.")
             ele = self.driver.ele("tag:body")
-            if "just a moment" in title:
-                iframe = self.search_recursively_shadow_root_with_iframe(ele)
-                if iframe:
-                    button = self.search_recursively_shadow_root_with_cf_input(iframe("tag:body"))
-                else:
-                    self.log_message("Iframe not found. Button search failed.")
-                return button
+            iframe = self.search_recursively_shadow_root_with_iframe(ele)
+            if iframe:
+                button = self.search_recursively_shadow_root_with_cf_input(
+                    iframe("tag:body")
+                )
+            else:
+                self.log_message("Iframe not found. Button search failed.")
+            return button
 
     def log_message(self, message):
         if self.log:
             print(message)
 
     def click_verification_button(self):
-        title = self.driver.title.lower()
         try:
             button = self.locate_cf_button()
             if button:
@@ -85,15 +85,16 @@ class CloudflareBypasser:
             return False
 
     def bypass(self):
-
         try_count = 0
 
         while not self.is_bypassed():
             if 0 < self.max_retries + 1 <= try_count:
                 self.log_message("Exceeded maximum retries. Bypass failed.")
                 break
-            self.log_message(f"check title: {self.driver.title}")
-            self.log_message(f"Attempt {try_count + 1}: Verification page detected. Trying to bypass...")
+
+            self.log_message(
+                f"Attempt {try_count + 1}: Verification page detected. Trying to bypass..."
+            )
             self.click_verification_button()
 
             try_count += 1
