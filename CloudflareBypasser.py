@@ -53,7 +53,7 @@ class CloudflareBypasser:
             # If the button is not found, search it recursively
             self.log_message("Basic search failed. Searching for button recursively.")
             ele = self.driver.ele("tag:body")
-            time.sleep(3)
+            time.sleep(1)
             if "just a moment" in self.driver.title.lower():
                 iframe = self.search_recursively_shadow_root_with_iframe(ele)
                 if iframe:
