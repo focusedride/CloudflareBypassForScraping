@@ -8,61 +8,27 @@ class CloudflareBypasser:
         self.max_retries = max_retries
         self.log = log
 
-    def search_recursively_shadow_root_with_iframe(self, ele):
-        if 'just a moment' in self.driver.title.lower():
-            if ele.shadow_root:
-                if ele.shadow_root.child().tag == "iframe":
-                    return ele.shadow_root.child()
-            else:
-                for child in ele.children():
-                    result = self.search_recursively_shadow_root_with_iframe(child)
-                    if result:
-                        return result
-            return None
-
-    def search_recursively_shadow_root_with_cf_input(self, ele):
-        if 'just a moment' in self.driver.title.lower():
-            if ele.shadow_root:
-                if ele.shadow_root.ele("tag:input"):
-                    return ele.shadow_root.ele("tag:input")
-            else:
-                for child in ele.children():
-                    result = self.search_recursively_shadow_root_with_cf_input(child)
-                    if result:
-                        return result
-            return None
-
     def locate_cf_button(self):
-        button = None
-        eles = self.driver.eles("tag:input")
-        for ele in eles:
-            if "name" in ele.attrs.keys() and "type" in ele.attrs.keys():
-                self.log_message(f"['name']={ele.attrs['name']}")
-                if "turnstile" in ele.attrs["name"] and ele.attrs["type"] == "hidden":
-                    self.log_message(f"['name']={ele.attrs['name']}")
-                    button = (
-                        ele.parent()
-                        .shadow_root.child()("tag:body")
-                        .shadow_root("tag:input")
-                    )
-                    break
+        try:
+            sr = self.driver.ele('.:h2 spacer-bottom')
+            div1 = sr.next().children()[0]
+            div2 = div1.children()[0]
+            shadow = div2.shadow_root
+            iframe = shadow.ele('t:iframe')
+            body = iframe.ele("t:body")
+            sr = body.shadow_root
+            main_div = sr.child('.:main-wrapper')
+            main_content = main_div.child('#content')
+            main_grid = main_content.children()[0]
+            time.sleep(5)
+            cbc = main_grid.children()[0]
+            cbl = cbc.children()[0]
+            return cbl.children('t:input')[0]
+        except:
+            self.log_message('Error locating button')
+            pass
+        return None
 
-        if button:
-            return button
-        else:
-            # If the button is not found, search it recursively
-            self.log_message("Basic search failed. Searching for button recursively.")
-            ele = self.driver.ele("tag:body")
-            time.sleep(1)
-            if "just a moment" in self.driver.title.lower():
-                iframe = self.search_recursively_shadow_root_with_iframe(ele)
-                if iframe:
-                    button = self.search_recursively_shadow_root_with_cf_input(
-                        iframe("tag:body")
-                    )
-                else:
-                    self.log_message("Iframe not found. Button search failed.")
-                return button
 
     def log_message(self, message):
         if self.log:
