@@ -11,21 +11,20 @@ class CloudflareBypasser:
     def locate_cf_button(self):
         try:
             sr = self.driver.ele('.:h2 spacer-bottom')
-            div1 = sr.next().children()[0]
-            div2 = div1.children()[0]
+            div1 = sr.next(timeout=3).children(timeout=3)[0]
+            div2 = div1.children(timeout=3)[0]
             shadow = div2.shadow_root
             iframe = shadow.ele('t:iframe')
             body = iframe.ele("t:body")
             sr = body.shadow_root
             main_div = sr.child('.:main-wrapper')
             main_content = main_div.child('#content')
-            main_grid = main_content.children()[0]
-            time.sleep(5)
-            cbc = main_grid.children()[0]
-            cbl = cbc.children()[0]
+            main_grid = main_content.children(timeout=3)[0]
+            cbc = main_grid.children(timeout=3)[0]
+            cbl = cbc.children(timeout=3)[0]
             return cbl.children('t:input')[0]
-        except:
-            self.log_message('Error locating button')
+        except Exception as e:
+            self.log_message(f'Error locating button {e}')
             pass
         return None
 
