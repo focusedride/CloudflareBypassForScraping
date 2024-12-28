@@ -22,7 +22,7 @@ class CloudflareBypasser:
             main_grid = main_content.children(timeout=3)[0]
             cbc = main_grid.children(timeout=3)[0]
             cbl = cbc.children(timeout=3)[0]
-            return cbl.children('t:input')[0]
+            return cbl.children('t:input')[0] if cbl.children('t:input') else None
         except Exception as e:
             self.log_message(f'Error locating button {e}')
             pass
