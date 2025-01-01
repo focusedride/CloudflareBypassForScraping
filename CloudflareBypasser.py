@@ -43,6 +43,7 @@ class CloudflareBypasser:
 
         except Exception as e:
             self.log_message(f"Error clicking verification button: {e}")
+            pass
 
     def is_bypassed(self):
         try:
