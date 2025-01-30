@@ -11,8 +11,8 @@ class CloudflareBypasser:
     def locate_cf_button(self):
         try:
             sr = self.driver.ele(".:h2 spacer-bottom")
-            div1 = sr.next(timeout=3).children(timeout=3)[0]
-            div2 = div1.children(timeout=3)[0]
+            div1 = sr.next(timeout=15).children(timeout=10)[0]
+            div2 = div1.children(timeout=10)[0]
             shadow = div2.shadow_root
             iframe = shadow.ele("t:iframe")
             body = iframe.ele("t:body")
