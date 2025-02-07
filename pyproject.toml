@@ -58,4 +58,4 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 
-dependencies = ["DrissionPage==4.0.5.6"]
+dependencies = ["DrissionPage>=4"]
